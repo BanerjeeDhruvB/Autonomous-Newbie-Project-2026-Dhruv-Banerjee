@@ -77,6 +77,14 @@ def controller(
             steering = "RIGHT"
             speed_action = "SLOW"
 
+    if heading_error_deg > LARGE_HEADING_DEG or lane_offset_m > LARGE_OFFSET_M:
+        steering = "LEFT"
+        speed_action = "ACCELERATE"
+
+    if heading_error_deg < -LARGE_HEADING_DEG or lane_offset_m < -LARGE_OFFSET_M:
+        steering = "RIGHT"
+        speed_action = "ACCELERATE"
+
     elif obstacle_distance_m <= DANGER_OBSTACLE_M:
         if not left_clear and not right_clear:
             steering = "STRAIGHT"
@@ -128,16 +136,7 @@ def controller(
             speed_action = "SLOW"
 
     if e_stop:
-        if obstacle_distance_m <= DANGER_OBSTACLE_M:
-            steering = "STRAIGHT"
-            speed_action = "STOP"
-
-    if heading_error_deg > LARGE_HEADING_DEG or lane_offset_m > LARGE_OFFSET_M:
-        steering = "LEFT"
-        speed_action = "ACCELERATE"
-
-    if heading_error_deg < -LARGE_HEADING_DEG or lane_offset_m < -LARGE_OFFSET_M:
-        steering = "RIGHT"
-        speed_action = "ACCELERATE"
+        steering = "STRAIGHT"
+        speed_action = "STOP"
 
     return steering, speed_action
