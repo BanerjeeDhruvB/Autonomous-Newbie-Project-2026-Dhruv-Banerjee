@@ -113,5 +113,83 @@ scenarios = [
             "right_clear": True,
             "sensor_valid": True
         }
-    }
+    },
+    {
+        "name": "Just barely impossible to avoid, not enough turning radius (left turn)",
+        "inputs": {
+            "obstacle_distance_m": 1.8,
+            "lane_offset_m": 0.25,
+            "heading_error_deg": 5.0,
+            "speed_mps": 2.2,
+            "e_stop": False,
+            "left_clear": True,
+            "right_clear": False,
+            "sensor_valid": True,
+        }
+    },
+    {
+        "name": "Just barely impossible to avoid, not enough turning radius (right turn)",
+        "inputs": {
+            "obstacle_distance_m": 1.8,
+            "lane_offset_m": -0.25,
+            "heading_error_deg": -5.0,
+            "speed_mps": 2.2,
+            "e_stop": False,
+            "left_clear": False,
+            "right_clear": True,
+            "sensor_valid": True,
+        }
+    },
+    {
+        "name": "Large offset, correct heading",
+        "inputs": {
+            "obstacle_distance_m": 999,
+            "lane_offset_m": 0.5,
+            "heading_error_deg": 0,
+            "speed_mps": 2.2,
+            "e_stop": False,
+            "left_clear": True,
+            "right_clear": False,
+            "sensor_valid": True,
+        }
+    },
+    {
+        "name": "test",
+        "inputs": {
+            "obstacle_distance_m": 3,
+            "lane_offset_m": 0,
+            "heading_error_deg": 0,
+            "speed_mps": 2.2,
+            "e_stop": False,
+            "left_clear": True,
+            "right_clear": False,
+            "sensor_valid": True,
+        }
+    },
+    {
+        "name": "Obstacle at cation distance, centered, correct heading, no safe side",
+        "inputs": {
+            "obstacle_distance_m": 1.8,
+            "lane_offset_m": 0,
+            "heading_error_deg": 0,
+            "speed_mps": 2.2,
+            "e_stop": False,
+            "left_clear": False,
+            "right_clear": False,
+            "sensor_valid": True,
+        }
+    },
+    {
+        "name": "Obstacle Ahead DANGER, Left Clear",
+        "inputs": {
+            "obstacle_distance_m": 0.999,
+            "lane_offset_m": 0.0,
+            "heading_error_deg": 0.0,
+            "speed_mps": 3.0,
+            "e_stop": False,
+            "left_clear": True,
+            "right_clear": False,
+            "sensor_valid": True
+        }
+    },
 ]

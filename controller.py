@@ -64,16 +64,23 @@ def controller(
     TURNING_RATE_DEG_PER_S = 35
     TURNING_RADIUS_APPROX = (TURN_SPEED_MPS)/(35*(3.14159/180))
     
-    #Safety margin for staying away from obstacle. Increases with heading error
-    SAFETY_MARGIN_M = obstacle_distance_m*math.sin(math.radians(abs(heading_error_deg))) + 0.1
+    MARGIN_MULTIPLIER = 30
+    #Safety margins to ensure collision does not happen
+    SAFETY_MARGIN = MARGIN_MULTIPLIER*math.sin(math.radians(heading_error_deg*3.14159/180))
 
-    #Check if turning radius clears obstacle
+    #Booleans that show if vehicle clears obstacle
     LEFT_TURN_CLEARS_OBS = False
     RIGHT_TURN_CLEARS_OBS = False
-    if TURNING_RADIUS_APPROX**2-(obstacle_distance_m-OBS_LENGTH_M/2)**2 < 0:
-        LEFT_TURN_CLEARS_OBS = False
-    else: LEFT_TURN_CLEARS_OBS = math.sqrt(TURNING_RADIUS_APPROX**2-(obstacle_distance_m-OBS_LENGTH_M/2)**2)-TURNING_RADIUS_APPROX < -(lane_offset_m + OBS_WIDTH_M/2 + SAFETY_MARGIN_M)
-
+    
+    #Clearance checks. Coordinate system relative to the car's current position, and check if the car intersects the obstacle if it keeps going with the current turning radius
+    DISCRIMINANT = TURNING_RADIUS_APPROX**2-(obstacle_distance_m-OBS_LENGTH_M/2)**2
+    if not  DISCRIMINANT < 0: #avoid non-real error
+        LEFT_LATERAL_DISPLACEMENT = math.sqrt(DISCRIMINANT)-TURNING_RADIUS_APPROX
+        RIGHT_LATERAL_DISPLACEMENT = -LEFT_LATERAL_DISPLACEMENT
+        
+        LEFT_TURN_CLEARS_OBS =  LEFT_LATERAL_DISPLACEMENT < -(lane_offset_m + OBS_WIDTH_M/2 + SAFETY_MARGIN)
+        RIGHT_TURN_CLEARS_OBS = RIGHT_LATERAL_DISPLACEMENT > -lane_offset_m + OBS_WIDTH_M/2 - SAFETY_MARGIN
+    
     centered = abs(lane_offset_m) <= MILD_OFFSET_M
     small_heading_error = abs(heading_error_deg) <= MILD_HEADING_DEG
 
@@ -98,41 +105,17 @@ def controller(
 
     if heading_error_deg > LARGE_HEADING_DEG or lane_offset_m > LARGE_OFFSET_M:
         steering = "LEFT"
-        speed_action = "ACCELERATE"
+        speed_action = "SLOW"
 
     if heading_error_deg < -LARGE_HEADING_DEG or lane_offset_m < -LARGE_OFFSET_M:
         steering = "RIGHT"
-        speed_action = "ACCELERATE"
+        speed_action = "SLOW"
 
-    elif obstacle_distance_m <= DANGER_OBSTACLE_M:
-        if not left_clear and not right_clear:
-            steering = "STRAIGHT"
-            speed_action = "STOP"
-
-        elif left_clear and not right_clear:
-            steering = "LEFT"
-            speed_action = "SLOW"
-
-        elif right_clear and not left_clear:
-            steering = "RIGHT"
-            speed_action = "SLOW"
-
-        elif heading_error_deg > MILD_HEADING_DEG or lane_offset_m > MILD_OFFSET_M:
-            steering = "LEFT"
-            speed_action = "SLOW"
-
-        elif heading_error_deg < -MILD_HEADING_DEG or lane_offset_m < -MILD_OFFSET_M:
-            steering = "RIGHT"
-            speed_action = "SLOW"
-
-        else:
-            steering = "LEFT"
-            speed_action = "SLOW"
+    if obstacle_distance_m <= DANGER_OBSTACLE_M:
+        steering = "STRAIGHT"
+        speed_action = "STOP"
 
     elif obstacle_distance_m <= CAUTION_OBSTACLE_M:
-        print(math.sqrt(TURNING_RADIUS_APPROX**2-(obstacle_distance_m-OBS_LENGTH_M/2)**2)-TURNING_RADIUS_APPROX)
-        print(-(lane_offset_m + OBS_WIDTH_M/2 + SAFETY_MARGIN_M))
-        print(LEFT_TURN_CLEARS_OBS)
         if not left_clear and not right_clear:
             steering = "STRAIGHT"
             speed_action = "STOP"
@@ -141,21 +124,21 @@ def controller(
             steering = "LEFT"
             speed_action = "SLOW"
 
-        elif right_clear and not left_clear:
+        elif (right_clear and not left_clear) and RIGHT_TURN_CLEARS_OBS:
             steering = "RIGHT"
             speed_action = "SLOW"
 
-        elif heading_error_deg > MILD_HEADING_DEG or lane_offset_m > MILD_OFFSET_M:
+        elif (heading_error_deg > MILD_HEADING_DEG or lane_offset_m > MILD_OFFSET_M) and LEFT_TURN_CLEARS_OBS:
             steering = "LEFT"
             speed_action = "SLOW"
 
-        elif heading_error_deg < -MILD_HEADING_DEG or lane_offset_m < -MILD_OFFSET_M:
+        elif (heading_error_deg < -MILD_HEADING_DEG or lane_offset_m < -MILD_OFFSET_M) and RIGHT_TURN_CLEARS_OBS:
             steering = "RIGHT"
             speed_action = "SLOW"
 
         else:
             steering = "STRAIGHT"
-            speed_action = "SLOW"
+            speed_action = "STOP"
 
     if e_stop:
         steering = "STRAIGHT"
