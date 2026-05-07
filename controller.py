@@ -18,6 +18,7 @@
 # Therefore:
 # - positive lane_offset_m means vehicle is right of center, so LEFT is corrective
 # - positive heading_error_deg means vehicle points right of desired direction, so LEFT is corrective
+import math
 
 VALID_STEERING = {"LEFT", "RIGHT", "STRAIGHT"}
 VALID_SPEED = {"ACCELERATE", "SLOW", "STOP"}
@@ -54,6 +55,16 @@ def controller(
     LARGE_OFFSET_M = 0.40
 
     HIGH_SPEED_MPS = 3.0
+
+    #Constants for turning radius check
+    OBS_WIDTH_M = 0.714
+    OBS_LENGTH_M = 0.286
+
+    TURNING_RATE_DEG_PER_S = 35
+    TURNING_RADIUS_APPROX = (speed_mps)/(35*(3.14159/180))
+
+    #Check if turning radius clears obstacle
+    LEFT_TURN_CLEARS_OBS = math.sqrt(TURNING_RADIUS_APPROX**2-(obstacle_distance_m-OBS_LENGTH_M/2)**2)-TURNING_RADIUS_APPROX < -(lane_offset_m+OBS_WIDTH_M/2)
 
     centered = abs(lane_offset_m) <= MILD_OFFSET_M
     small_heading_error = abs(heading_error_deg) <= MILD_HEADING_DEG
