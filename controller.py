@@ -60,11 +60,19 @@ def controller(
     OBS_WIDTH_M = 0.714
     OBS_LENGTH_M = 0.286
 
+    TURN_SPEED_MPS = 1.5
     TURNING_RATE_DEG_PER_S = 35
-    TURNING_RADIUS_APPROX = (speed_mps)/(35*(3.14159/180))
+    TURNING_RADIUS_APPROX = (TURN_SPEED_MPS)/(35*(3.14159/180))
+    
+    #Safety margin for staying away from obstacle. Increases with heading error
+    SAFETY_MARGIN_M = obstacle_distance_m*math.sin(math.radians(abs(heading_error_deg))) + 0.1
 
     #Check if turning radius clears obstacle
-    LEFT_TURN_CLEARS_OBS = math.sqrt(TURNING_RADIUS_APPROX**2-(obstacle_distance_m-OBS_LENGTH_M/2)**2)-TURNING_RADIUS_APPROX < -(lane_offset_m+OBS_WIDTH_M/2)
+    LEFT_TURN_CLEARS_OBS = False
+    RIGHT_TURN_CLEARS_OBS = False
+    if TURNING_RADIUS_APPROX**2-(obstacle_distance_m-OBS_LENGTH_M/2)**2 < 0:
+        LEFT_TURN_CLEARS_OBS = False
+    else: LEFT_TURN_CLEARS_OBS = math.sqrt(TURNING_RADIUS_APPROX**2-(obstacle_distance_m-OBS_LENGTH_M/2)**2)-TURNING_RADIUS_APPROX < -(lane_offset_m + OBS_WIDTH_M/2 + SAFETY_MARGIN_M)
 
     centered = abs(lane_offset_m) <= MILD_OFFSET_M
     small_heading_error = abs(heading_error_deg) <= MILD_HEADING_DEG
@@ -122,11 +130,14 @@ def controller(
             speed_action = "SLOW"
 
     elif obstacle_distance_m <= CAUTION_OBSTACLE_M:
+        print(math.sqrt(TURNING_RADIUS_APPROX**2-(obstacle_distance_m-OBS_LENGTH_M/2)**2)-TURNING_RADIUS_APPROX)
+        print(-(lane_offset_m + OBS_WIDTH_M/2 + SAFETY_MARGIN_M))
+        print(LEFT_TURN_CLEARS_OBS)
         if not left_clear and not right_clear:
             steering = "STRAIGHT"
             speed_action = "STOP"
 
-        elif left_clear and not right_clear:
+        elif (left_clear and not right_clear) and LEFT_TURN_CLEARS_OBS:
             steering = "LEFT"
             speed_action = "SLOW"
 
