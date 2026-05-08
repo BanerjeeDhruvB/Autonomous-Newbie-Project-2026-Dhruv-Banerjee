@@ -156,7 +156,7 @@ scenarios = [
     {
         "name": "Object outside caution distance, no safe side",
         "inputs": {
-            "obstacle_distance_m": 3,
+            "obstacle_distance_m": 4,
             "lane_offset_m": 0,
             "heading_error_deg": 0,
             "speed_mps": 2.2,
