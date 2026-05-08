@@ -205,4 +205,17 @@ scenarios = [
             "sensor_valid": True,
         }
     },
+        {
+        "name": "Obstacle Ahead, Both Clear",
+        "inputs": {
+            "obstacle_distance_m": 1.8,
+            "lane_offset_m": 0.0,
+            "heading_error_deg": 0.0,
+            "speed_mps": 3.0,
+            "e_stop": False,
+            "left_clear": True,
+            "right_clear": True,
+            "sensor_valid": True
+        }
+    },
 ]
