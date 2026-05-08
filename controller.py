@@ -90,6 +90,11 @@ def controller(
     if not sensor_valid:
         return "STRAIGHT", "STOP"
 
+    if e_stop:
+        steering = "STRAIGHT"
+        speed_action = "STOP"
+        return steering, speed_action
+
     if centered and small_heading_error:
         steering = "STRAIGHT"
         speed_action = "ACCELERATE"
@@ -139,9 +144,5 @@ def controller(
         else:
             steering = "STRAIGHT"
             speed_action = "STOP"
-
-    if e_stop:
-        steering = "STRAIGHT"
-        speed_action = "STOP"
 
     return steering, speed_action
