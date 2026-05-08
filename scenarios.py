@@ -148,7 +148,7 @@ scenarios = [
             "heading_error_deg": 0,
             "speed_mps": 2.2,
             "e_stop": False,
-            "left_clear": True,
+            "left_clear": False,
             "right_clear": False,
             "sensor_valid": True,
         }
