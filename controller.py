@@ -121,16 +121,15 @@ def controller(
         speed_action = "STOP"
 
     elif obstacle_distance_m <= CAUTION_OBSTACLE_M:
-        print(LEFT_TURN_CLEARS_OBS, RIGHT_TURN_CLEARS_OBS)
         if not left_clear and not right_clear:
             steering = "STRAIGHT"
             speed_action = "STOP"
 
-        elif (left_clear and not right_clear) and LEFT_TURN_CLEARS_OBS:
+        elif left_clear and LEFT_TURN_CLEARS_OBS:
             steering = "LEFT"
             speed_action = "SLOW"
 
-        elif (right_clear and not left_clear) and RIGHT_TURN_CLEARS_OBS:
+        elif right_clear and RIGHT_TURN_CLEARS_OBS:
             steering = "RIGHT"
             speed_action = "SLOW"
 
@@ -141,13 +140,9 @@ def controller(
         elif (heading_error_deg < -MILD_HEADING_DEG or lane_offset_m < -MILD_OFFSET_M) and RIGHT_TURN_CLEARS_OBS:
             steering = "RIGHT"
             speed_action = "SLOW"
-
-        #next 2 conditions are incase both left and right are clear, but obstacle blocks one of the paths
-        elif LEFT_TURN_CLEARS_OBS:
-            steering = "LEFT"
-            speed_action = "SLOW"
-        elif RIGHT_TURN_CLEARS_OBS:
-            steering = "RIGHT"
-            speed_action = "SLOW"
+            
+        else:
+            steering = "STRAIGHT"
+            speed_action = "STOP"
 
     return steering, speed_action
