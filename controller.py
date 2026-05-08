@@ -121,6 +121,7 @@ def controller(
         speed_action = "STOP"
 
     elif obstacle_distance_m <= CAUTION_OBSTACLE_M:
+        print(LEFT_TURN_CLEARS_OBS, RIGHT_TURN_CLEARS_OBS)
         if not left_clear and not right_clear:
             steering = "STRAIGHT"
             speed_action = "STOP"
@@ -141,8 +142,12 @@ def controller(
             steering = "RIGHT"
             speed_action = "SLOW"
 
-        else:
-            steering = "STRAIGHT"
-            speed_action = "STOP"
+        #next 2 conditions are incase both left and right are clear, but obstacle blocks one of the paths
+        elif LEFT_TURN_CLEARS_OBS:
+            steering = "LEFT"
+            speed_action = "SLOW"
+        elif RIGHT_TURN_CLEARS_OBS:
+            steering = "RIGHT"
+            speed_action = "SLOW"
 
     return steering, speed_action

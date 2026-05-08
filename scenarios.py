@@ -192,4 +192,17 @@ scenarios = [
             "sensor_valid": True
         }
     },
+    {
+        "name": "Left clear, but right not clear due to obstacle",
+        "inputs": {
+            "obstacle_distance_m": 1.8,
+            "lane_offset_m": -0.25,
+            "heading_error_deg": -5.0,
+            "speed_mps": 2.2,
+            "e_stop": False,
+            "left_clear": True,
+            "right_clear": True,
+            "sensor_valid": True,
+        }
+    },
 ]
